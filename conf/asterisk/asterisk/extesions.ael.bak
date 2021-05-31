@@ -1,0 +1,6 @@
+globals
+{
+    OUTCALLS	= SIP/TA410;
+    RECORDING	= 2;
+    DIR_RECORDS	= /var/calls/;
+};
