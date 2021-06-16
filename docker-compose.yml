@@ -14,7 +14,10 @@ services:
       network_mode: "host"
 
     asterisk1:
-      image: asterisk
+      build:
+        context: .
+        dockerfile: Dockerfile
+      #image: asterisk
       #container_name: asterisk
       hostname: asterisk1
       #ports:
@@ -45,6 +48,9 @@ services:
       #network_mode: "host"
 
     asterisk2:
+      build:
+        context: .
+        dockerfile: Dockerfile
       image: asterisk
       #container_name: asterisk
       hostname: asterisk2
