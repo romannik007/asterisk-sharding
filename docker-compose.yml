@@ -16,7 +16,7 @@ services:
     asterisk1:
       build:
         context: .
-        dockerfile: Dockerfile
+        dockerfile: Dockerfile.asterisk
       #image: asterisk
       #container_name: asterisk
       hostname: asterisk1
@@ -50,8 +50,8 @@ services:
     asterisk2:
       build:
         context: .
-        dockerfile: Dockerfile
-      image: asterisk
+        dockerfile: Dockerfile.asterisk
+      #image: asterisk
       #container_name: asterisk
       hostname: asterisk2
       #restart: always
@@ -80,6 +80,11 @@ services:
 #      links:
 #        - mysql
       #network_mode: "host"
+
+freepbx
+  build:
+    context: .
+    dockerfile: Dockerfile.freepbx
 
 networks: 
   asterisk:
