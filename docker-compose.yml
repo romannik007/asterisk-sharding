@@ -81,10 +81,18 @@ services:
 #        - mysql
       #network_mode: "host"
 
-freepbx
-  build:
-    context: .
-    dockerfile: Dockerfile.freepbx
+    freepbx:
+      build:
+        context: .
+        dockerfile: Dockerfile.freepbx
+      volumes:
+        - ./conf/asterisk/default/asterisk:/etc/default/asterisk
+        - ./conf/asterisk/asterisk:/etc/asterisk
+#        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
+#        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
+        - ./logs/asterisk:/var/log/asterisk"
+        #- asterisk-var:/var/lib/asterisk/
+      entrypoint: [ '/entry-fpbx.sh' ]
 
 networks: 
   asterisk:
