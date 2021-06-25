@@ -30,21 +30,21 @@ function ivr(context, exten)
   if choose == "11" then
     app.noop("choose: " .. 11)
     --recording(nil,"1011")
-    do_dial(context, "SIP/1011")
+    do_dial(context, "PJSIP/1011")
     local dialstatus = channel["DIALSTATUS"]:get()
 -- если занято - добавить в диалплан
   elseif choose == "12" then
     app.noop("choose: " .. 12)
     --recording(nil,"1012")
-    do_dial(context, "SIP/1012")
+    do_dial(context, "PJSIP/1012")
   else
     app.noop("choose: " .. "else")
     recording(nil,"1002")
-    app.dial("SIP/1002",10,"m")
+    app.dial("PJSIP/1002",10,"m")
     if channel["DIALSTATUS"]:get() == "NOANSWER" then
       app.noop("DIALSTATUS NOANSWER")
       recording(nil, "1008")
-      app.dial("SIP/1008",nil,"m")
+      app.dial("PJSIP/1008",nil,"m")
     end
   end;
 end;
@@ -66,7 +66,7 @@ extensions = {
             app.noop("Ответ kamailio")
             app.noop("kamailio : " .. exten)
             --recording(nil, exten)
-            do_dial(context, "SIP/" .. exten)
+            do_dial(context, "PJSIP/" .. exten)
           end;
       };
 
@@ -74,7 +74,7 @@ extensions = {
           ["_ZXXX"] = function(context, exten)
             app.noop("internal : " .. exten)
             --recording(nil, exten)
-            do_dial(context, "SIP/" .. exten)
+            do_dial(context, "PJSIP/" .. exten)
           end;
       };  
 
@@ -82,7 +82,7 @@ extensions = {
           ["_9ZXXXX"] = function(context, exten)
             app.noop("TO_TA410_local : " .. exten)
             --recording(nil, exten)      
-            do_dial(context, "SIP/TA410/" .. exten:sub(2))
+            do_dial(context, "PJSIP/TA410/" .. exten:sub(2))
             app.congestion()
             do_hangup()
           end;
@@ -93,7 +93,7 @@ extensions = {
           ["_98ZXXXXXXXXX"] = function(context, exten)
             app.noop("TO_TA410_long : " .. exten)
             --recording(nil, exten:sub(2))      
-            do_dial(context, "SIP/TA410/" .. exten:sub(2))
+            do_dial(context, "PJSIP/TA410/" .. exten:sub(2))
             app.congestion()
             do_hangup()
           end;
