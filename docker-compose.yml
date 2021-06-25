@@ -20,21 +20,21 @@ services:
       #image: asterisk
       #container_name: asterisk
       hostname: asterisk1
-      #ports:
-        #- 5060:5060/tcp
-        #- 5060:5060/udp
-        #- 10000-10100:10000-10100/udp
-        #- 10000-10100:10000-10100/tcp
+      ports:
+        - 5060:5060/tcp
+        - 5060:5060/udp
+        - 10000-10099:10000-10099/udp
+        - 10000-10099:10000-10099/tcp
       networks:
         asterisk:
           ipv4_address: 172.16.16.2
       #restart: always
       volumes:
-        - ./conf/asterisk/default/asterisk:/etc/default/asterisk
-        - ./conf/asterisk/asterisk:/etc/asterisk
+        - ./conf/asterisk1/default/asterisk:/etc/default/asterisk
+        - ./conf/asterisk1/asterisk:/etc/asterisk
 #        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
 #        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
-        - ./logs/asterisk:/var/log/asterisk"
+        - ./logs/asterisk1:/var/log/asterisk"
         - asterisk-var:/var/lib/asterisk/
         #- "/home/odbc/odbc.ini:/etc/odbc.ini"
         #- "/home/odbc/odbcinst.ini:/etc/odbcinst.ini"
@@ -55,20 +55,20 @@ services:
       #container_name: asterisk
       hostname: asterisk2
       #restart: always
-      #ports:
-      #  - 5060:5060/tcp
-      #  - 5060:5060/udp
-      #  - 10000-10200:10000-10200/udp
-      #  - 10000-10200:10000-10200/tcp
+      ports:
+        - 5061:5060/tcp
+        - 5061:5060/udp
+        - 10000-10100:10000-10200/udp
+        - 10000-10100:10000-10200/tcp
       networks:
         asterisk:
           ipv4_address: 172.16.16.3
       volumes:
-        - ./conf/asterisk/default/asterisk:/etc/default/asterisk
-        - ./conf/asterisk/asterisk:/etc/asterisk
+        - ./conf/asterisk2/default/asterisk:/etc/default/asterisk
+        - ./conf/asterisk2/asterisk:/etc/asterisk
 #        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
 #        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
-        - ./logs/asterisk:/var/log/asterisk"
+        - ./logs/asterisk2:/var/log/asterisk"
         - asterisk-var:/var/lib/asterisk/
         #- "/home/odbc/odbc.ini:/etc/odbc.ini"
         #- "/home/odbc/odbcinst.ini:/etc/odbcinst.ini"

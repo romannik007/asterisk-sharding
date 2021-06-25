@@ -1,0 +1,197 @@
+[globals]
+
+    OUTCALLS	= SIP/TA410;
+    RECORDING	= 2;
+    DIR_RECORDS	= /var/calls/;
+
+[general]
+
+autofallthrough=yes
+
+[default]
+
+[From_TA410]
+    
+    exten => 9999,1,Answer()
+    exten => 9999,n,Background(beep);
+    exten => 9999,n,WaitExten(5); ждем 5 секунды
+    exten => 9999,n,Goto(from_TA410_first,1002,1)
+    exten => 9999,n,Hangup()
+
+   exten => 0000,1,Set(CALLEDFAX=${EXTEN});
+   exten => 0000,2,Answer;
+   exten => 0000,3,Goto(fax,${EXTEN},1);
+
+    exten => 11,1,Dial(SIP/1011,,m); если нажата 1, вызываем 1001 (играет музыка - опция m)
+    exten => 11,n,Hangup(); завершить звонок
+
+
+    exten => 12,1,Dial(SIP/1012,,m); если нажата 1, вызываем 1012 (играет музыка - опция m)
+    exten => 12,n,Hangup(); завершить звонок
+
+    ;exten => 4,1,Dial(SIP/1004,,m); если нажата 1, вызываем 1004 (играет музыка - опция m)
+    ;exten => 4,n,Hangup(); завершить звонок
+
+    exten => 50,1,Dial(SIP/1005,,m); если нажата 1, вызываем 1005 (играет музыка - опция m)
+    exten => 50,n,Hangup(); завершить звонок
+
+    exten => 40,1,Dial(SIP/1040,,m); если нажата 1, вызываем 1006 (играет музыка - опция m)
+    exten => 40,n,Hangup(); завершить звонок
+    
+
+    exten => 90,1,Dial(SIP/1090,,m); если нажата 8, вызываем 1008 (играет музыка - опция m)
+    exten => 90,n,Hangup(); завершить звонок
+
+
+    ; нажата другая кнопка - переходим на 1002
+    exten => i,1,Goto(from_TA410_first,1002,1)
+    exten => i,n,Hangup(); завершить звонок
+
+    ;не нажата кнопка - переход
+    exten => t,1,Goto(from_TA410_first,1002,1)
+    exten => t,n,Hangup(); завершить звонок
+
+[from_TA410_first]
+
+    ;вызываем 1002 втечение 10 сек, потом перенаправляем на 1008
+    exten => 1002,1,Gosub(recording,s,1(${CALLERID(num)},${EXTEN}))
+    exten => 1002,n,Dial(SIP/1002,10,m); если нажата 2, вызываем 1002 (играет музыка - опция m)
+    exten => 1002,n,Goto(1008,1);
+    exten => 1002,n,Hangup(); завершить звонок
+
+    exten => 1008,1,Gosub(recording,s,1(${CALLERID(num)},${EXTEN}))
+    exten => 1008,n,Dial(SIP/1008,,m); если нажата 80, вызываем 1008 (играет музыка - опция m)
+    exten => 1008,n,Hangup(); завершить звонок
+
+
+[phones]
+    
+    include => internal
+    include => To_TA410_local
+    include => To_TA410_long
+    include => To_TA410_mobile
+    include => no_number
+
+[internal]
+;  include => no_number
+    exten => _ZXXX,1,Gosub(recording,s,1(${CALLERID(num)},${EXTEN}))
+;    exten => _ZXXX,n,Gosub(answer,s,1(${CALLERID(num)},${EXTEN}))
+    exten => _ZXXX,n,Dial(SIP/${EXTEN})
+
+[To_TA410_local]
+    ;Местные    
+;    include => no_number
+    exten => _9ZXXXX,1,Gosub(recording,s,1(${CALLERID(num)},${EXTEN}))
+    exten => _9ZXXXX,n,Dial(${OUTCALLS}/${EXTEN:1})
+    exten => _9ZXXXX,n,Congestion()
+    exten => _9ZXXXX,n,Hangup()
+
+    
+    ;Настроить экстренные звонки
+    ;exten => 911,1,Dial(${OUTCALLS}/911)
+    exten => _0Z,1,Gosub(recording,s,1(${CALLERID(num)},${EXTEN}))
+    exten => _0Z,n,Dial(${OUTCALLS}/${EXTEN})
+    exten => _0Z,n,Congestion()
+    exten => _0Z,n,Hangup()
+
+    exten => _90Z,1,Gosub(recording,s,1(${CALLERID(num)},${EXTEN}))
+    exten => _90Z,n,Dial(${OUTCALLS}/${EXTEN:1})
+    exten => _90Z,n,Congestion()
+    exten => _90Z,n,Hangup()
+
+[To_TA410_long]
+
+    ;Междугородние
+;    include = no_number
+    exten => _98ZXXXXXXXXX,1,Gosub(recording,s,1(${CALLERID(num)},${EXTEN}))
+    exten => _98ZXXXXXXXXX,n,Dial(${OUTCALLS}/${EXTEN:1})
+    exten => _98ZXXXXXXXXX,n,Congestion()
+    exten => _98ZXXXXXXXXX,n,Hangup()
+
+[To_TA410_mobile]
+
+    exten => _+7ZXXXXXXXXX,1,Gosub(recording,s,1(${CALLERID(num)},${EXTEN}))
+    exten => _+7ZXXXXXXXXX,n,Dial(${OUTCALLS}/8${EXTEN:2})
+    exten => _+7ZXXXXXXXXX,n,Congestion()
+    exten => _+7ZXXXXXXXXX,n,Hangup()
+    
+
+;[in]
+
+;exten => 100,1,Answer()
+;exten => 100,n,Wait(3)
+;exten => 100,n,HangUp()
+
+[fax]
+
+    exten => 0000,1,Macro(faxreceive)
+
+    exten => h,1,System(/etc/mailfax "${CALLERIDNUM}" "${CALLEDFAX}" "${EXTNAME}" "${EXTEMAIL}" "${FAXFILE}" "${EXTCOMPANY}")
+
+
+; MixMonitor
+
+[recording]
+
+;exten => s,1,GoToIf($[${RECORDING} = 1]?mp3:next)
+;exten => s,n(next),GoToIf($[${RECORDING} = 2]?wav:no)
+;exten => s,n(mp3),Set(fname=${UNIQUEID}-${STRFTIME(${EPOCH},,%Y-%m-%d-%H_%M)}-${ARG1}-${ARG2});
+;exten => s,n(mp3),Set(fname='');
+
+;exten => s,n,Set(monopt=nice -n 19 /usr/bin/lame -b 32  --silent "${DIR_RECORDS}${fname}.wav"  "${DIR_RECORDS}${fname}.mp3" && rm -f "${DIR_RECORDS}${fname}.wav" && chmod o+r "${DIR_RECORDS}${fname}.mp3");
+;exten => s,n,Set(CDR(filename)=${fname}.mp3);
+exten => s,1,Set(CDR(realdst)=${ARG2});
+exten => s,n,Set(CDR(remoteip)=${CHANNEL(recvip)});
+;exten => s,n,MixMonitor(${DIR_RECORDS}${fname}.wav,b,${monopt});
+;exten => s,n,Goto(no);
+;exten => s,n(wav),Set(fname=${UNIQUEID}-${STRFTIME(${EPOCH},,%Y-%m-%d-%H_%M)}-${ARG1}-${ARG2});
+;exten => s,n(wav),Set(fname='');
+
+;exten => s,n,Set(CDR(filename)=${fname}.wav);
+;exten => s,n,Set(CDR(realdst)=${ARG2});
+;exten => s,n,Set(CDR(remoteip)=${CHANNEL(recvip)});
+;exten => s,n,MixMonitor(${DIR_RECORDS}${fname}.wav,b);
+;exten => s,n,Goto(no);
+;exten => s,n(no),Verbose(Exit record);
+exten => s,n,return
+
+
+[macro-faxreceive]
+  exten => s,1,Set(FAXFILE=/var/spool/asterisk/fax/${CALLEDFAX}/${UNIQUEID});
+  exten => s,2,Set(EXTMAIL=${DB(${MACRO_EXTEN}/xEmail)});
+  exten => s,3,NoOP();
+  exten => s,4,Set(EXTNAME=${DB(${MACRO_EXTEN}/xName)});
+  exten => s,5,NoOP();
+  exten => s,6,Set(EXTCOMPANY=${DB(${MACRO_EXTEN}/xCompany)});
+  exten => s,7,rxfax(${FAXFILE}.tif);
+  exten => s,103,Set(EXTMAIL=fax@company.com);
+  exten => s,104,Goto(7);
+  exten => s,105,Set(EXTNAME=Unknown);
+  exten => s,106,Goto(7);
+  exten => s,107,Set(EXTCOMPANY=Company);
+  exten => s,108,Goto(7);
+
+[no_number]
+  exten => _X.,1,Playback(pbx-invalid)
+    same => n,Hangup()
+
+[answer]
+  exten => s,1,NoOp(${ARG1})
+  exten => s,n,Log(NOTICE, Dialing out from ${ARG1} to (${ARG2}))
+  exten => s,n,Dial(${ARG2},30,Ttr)
+  exten => s,n,GotoIf($["${DIALSTATUS}" = "BUSY"]?100)
+;  exten => s,n,GotoIf($["${DIALSTATUS}" = "NOANSWER"]?200)
+  exten => s,n,GotoIf($["${DIALSTATUS}" = "CHANUNAVAIL"]?300)
+
+  exten => s,100,Playback(pls-try-call-later) ; абонент
+;  exten => s,n,Playback(zanjat) ; занят
+  exten => s,n,Hangup
+
+;  exten => s,200,Playback(abonent) ; абонент
+;  exten => s,n,Playback(ne-otvechaet) ; не отвечает
+;  exten => s,n,Hangup
+
+  exten => s,300,Playback(pls-try-call-later) ; абонент
+;  exten => s,n,Playback(is-curntly-unavail) ; абонент недоступен
+  exten => s,n,Hangup
+
