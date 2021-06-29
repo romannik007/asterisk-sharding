@@ -1,4 +1,3 @@
-
 function do_hangup()
   app.hangup()
 end;
@@ -60,23 +59,25 @@ extensions = {
       end;
     };
 
-    --extensions = {
-      kamailio = {
-          ["_ZXXX"] = function(context, exten)
-            app.noop("Ответ kamailio")
-            app.noop("kamailio : " .. exten)
-            --recording(nil, exten)
-            do_dial(context, "PJSIP/" .. exten)
-          end;
-      };
+--    extensions = {
+    e1111 = {
+      ["1111"] = function(context, exten)
+        app.noop("Ответ 1111")
+        app.noop("1111 : " .. exten)
+        --recording(nil, exten)
+        app.answer()
+        app.wait(3)
+        do_hangup()
+      end;
+    };
 
-      internal = {
-          ["_ZXXX"] = function(context, exten)
-            app.noop("internal : " .. exten)
-            --recording(nil, exten)
-            do_dial(context, "PJSIP/" .. exten)
-          end;
-      };  
+    internal = {
+      ["_ZXXX"] = function(context, exten)
+        app.noop("internal : " .. exten)
+        --recording(nil, exten)
+        do_dial(context, "PJSIP/" .. exten)
+      end;
+    };  
 
       To_TA410_local = {
           ["_9ZXXXX"] = function(context, exten)
@@ -109,7 +110,7 @@ extensions = {
 
 
       phones = {
-          include = {"internal", "To_TA410_local","TO_TA410_long", "no_number", "kamailio"};
+          include = {"internal", "To_TA410_local","TO_TA410_long", "no_number"};
       };
 
     --};
