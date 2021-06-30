@@ -66,7 +66,8 @@ extensions = {
         app.noop("1111 : " .. exten)
         --recording(nil, exten)
         app.answer()
-        app.wait(3)
+--        app.wait(0.5)
+        app.Playback("pbx-invalid")
         do_hangup()
       end;
     };
@@ -110,7 +111,7 @@ extensions = {
 
 
       phones = {
-          include = {"internal", "To_TA410_local","TO_TA410_long", "no_number"};
+          include = {"internal", "To_TA410_local","TO_TA410_long", "no_number", "e1111"};
       };
 
     --};
