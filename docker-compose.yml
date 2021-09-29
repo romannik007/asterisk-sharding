@@ -9,10 +9,31 @@ services:
         #- asterisk1
         #- asterisk2
       volumes:
-        - ./conf/kamailio/etc/dispatcher.list:/etc/kamailio/dispatcher.list
-        - ./conf/kamailio/etc/kamailio.cfg:/etc/kamailio/kamailio.cfg
+        - ./conf/kamailio/etc/:/etc/kamailio/
       network_mode: "host"
-
+    
+    mysql:
+      image: mysql-5.7
+      #container_name: bx-mysql
+      hostname: mysql
+      healthcheck:
+        test: "/usr/bin/mysql --user=root --password='mysql-password' --execute \"SHOW DATABASES;\""
+        interval: 2s
+        timeout: 20s
+        retries: 10
+      networks:
+        - asterisk
+      ports:
+        - "3306:3306"
+      environment:
+        MYSQL_ROOT_PASSWORD: mysql-password
+        MYSQL_DATABASE: kamailio
+        MYSQL_USER: bitrix
+        MYSQL_PASSWORD: user-passowrd
+      volumes:
+        - ./volumes/mysql-kamailio/:/var/lib/mysql
+      command: ['--innodb_strict_mode=OFF','--character-set-server=utf8', '--collation-server=utf8_unicode_ci', '--skip-character-set-client-handshake', '--sql-mode=']
+          
     asterisk1:
       build:
         context: .
@@ -22,7 +43,7 @@ services:
       hostname: asterisk1
       ports:
         - 5060:5060/udp
-№        - 10000-10099:10000-10099/udp
+        - 10000-10099:10000-10099/udp
       networks:
         asterisk:
           ipv4_address: 172.16.16.2
@@ -32,13 +53,8 @@ services:
         - ./conf/asterisk1/asterisk:/etc/asterisk
 #        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
 #        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
-<<<<<<< HEAD
         - ./logs/asterisk:/var/log/asterisk"
         #- asterisk-var:/var/lib/asterisk/
-=======
-        - ./logs/asterisk1:/var/log/asterisk"
-        - asterisk-var:/var/lib/asterisk/
->>>>>>> master
         #- "/home/odbc/odbc.ini:/etc/odbc.ini"
         #- "/home/odbc/odbcinst.ini:/etc/odbcinst.ini"
       #command: "wait-for-it 192.168.0.99:3306 -s -t 20 -- asterisk -fvvvvv"
@@ -60,7 +76,7 @@ services:
       #restart: always
       ports:
         - 5061:5060/udp
-#        - 10100-10200:10100-10200/udp
+        - 10100-10200:10100-10200/udp
       networks:
         asterisk:
           ipv4_address: 172.16.16.3
@@ -69,13 +85,8 @@ services:
         - ./conf/asterisk2/asterisk:/etc/asterisk
 #        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
 #        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
-<<<<<<< HEAD
         - ./logs/asterisk:/var/log/asterisk"
         #- asterisk-var:/var/lib/asterisk/
-=======
-        - ./logs/asterisk2:/var/log/asterisk"
-        - asterisk-var:/var/lib/asterisk/
->>>>>>> master
         #- "/home/odbc/odbc.ini:/etc/odbc.ini"
         #- "/home/odbc/odbcinst.ini:/etc/odbcinst.ini"
       #command: "wait-for-it 192.168.0.99:3306 -s -t 20 -- asterisk -fvvvvv"
@@ -87,21 +98,6 @@ services:
 #        - mysql
       #network_mode: "host"
 
-<<<<<<< HEAD
-=======
-    freepbx:
-      build:
-        context: .
-        dockerfile: Dockerfile.freepbx
-      volumes:
-        - ./conf/asterisk/default/asterisk:/etc/default/asterisk
-        - ./conf/asterisk/asterisk:/etc/asterisk
-#        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
-#        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
-        - ./logs/asterisk:/var/log/asterisk"
-        #- asterisk-var:/var/lib/asterisk/
-      entrypoint: [ '/entry-fpbx.sh' ]
-
 networks: 
   asterisk:
     driver: bridge
@@ -109,7 +105,3 @@ networks:
       driver: default
       config:
         - subnet: 172.16.16.0/24
-
-volumes:
-  asterisk-var:
->>>>>>> master
