@@ -1,25 +1,11 @@
 #!/bin/bash
 # Переменные
-INET_IP=192.168.88.222 # Внешний IPшник 
-ASTER_IP=172.16.16.2 # IPшник SIP сервера
-EXTEN_IP=192.168.0.100 # IPшник SIP клиента
-FRTP=10000
-LRTP=10100
-SIPPORT=5060
-eth=enp2s0
-# Подключить модули:
-/sbin/modprobe nf_conntrack_sip
-/sbin/modprobe nf_nat_sip
-/sbin/modprobe nf_conntrack_h323
-# Разрешить пересылку пакетов
-iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT -v
-iptables -A FORWARD -p udp --dport $SIPPORT -j ACCEPT -v
-iptables -A FORWARD -p udp -m multiport --dports $FRTP:$LRTP -j ACCEPT -v
+sudo iptables -A DOCKER -t nat -p udp -m udp ! -i docker0 --dport 10000:10099 -j DNAT --to-destination $CIP:10000-10099
+sudo iptables -A DOCKER -p udp -m udp -d $CIP/32 ! -i docker0 -o docker0 --dport 10000:10099 -j ACCEPT
+sudo iptables -A POSTROUTING -t nat -p udp -m udp -s $CIP/32 -d $CIP/32 --dport 10000:10099 -j MASQUERADE
 
-iptables -t nat -A PREROUTING -i $eth -p udp \
--m udp --dport $FRTP:$LRTP -j DNAT \
---to-destination $ASTER_IP -v
-iptables -t nat -A PREROUTING -i $eth -p udp \
--m udp --dport $SIPPORT -j DNAT \
---to-destination $ASTER_IP -v
-netfilter-persistent save
+iptables-save
+
+# $CID - имя контейнера или его идентификатор
+# $NID - идентификатор используемой overlay сети
+# запускается на хосте после запуска контейнераДелает проброс большого диапазона портов одним правилом

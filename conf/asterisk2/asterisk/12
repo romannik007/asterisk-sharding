@@ -1,0 +1,90 @@
+1[general]
+
+    context = default
+    allowoverlap<------>= no; Вкл. или Выкл набор по одной цифре (т.е. каждая набранная цифра будет сразу отправляться в канал)
+    bindport<--><------>= 5060
+    bindaddr<--><------>= 0.0.0.0
+    alwaysauthreject<-->= yes; Если включено, всегда отвечает на INVITE и REGISTER, SIP сообщением 401 Unauthorized, вместо того чтобы сооб
+    callevents<><------>= yes; Установите 'yes', если хотите генерировать информацию о SIP событиях для AMI (asterisk manager interface) 
+    checkmwi<--><------>= 30; Время в секундах, между проверками голосовой почты
+    maxexpiry<-><------>= 3600; Максимальная продолжительность регистрации в секундах
+    localnet<--><------>= 192.168.88.0/24; укажет серверу Asterisk какие подсети являются локальными, прозрачными для использования IP адре
+    localnet<--><------>= 192.168.0.0/24
+    useragent<-><------>= ATS; Если вы не желаете сообщать, что используете Asterisk, напишите Cisco или Avaya, или abyrvalg v2.0. 
+    videosupport<------>= yes
+    allowguest<><------>= no
+    language<--><------>= ru
+
+;[sipp]
+
+;type = friend
+;context = in
+;host = 192.168.0.222
+;dtmfmode = rfc2833
+;directmedia = no
+;defaultuser = sipp
+;disallow = all
+;allow = alaw
+;allow = ulaw
+;insecure = port,invite
+;qualify = yes
+
+
+[allphones](!)
+
+    type<------> = friend
+    context<---> = phones
+    host<------> = dynamic
+    qualify<---> = yes
+    disallow<--> = all
+    allow<-----> = alaw
+    allow<-----> = ulaw
+    secret<----> = **KcsonPhones**
+    directmedia> = no         ;тоже что canreinvite в новой редакции
+    deny<------> = 0.0.0.0/0.0.0.0
+    ;permit<---> = 192.168.88.0/255.255.255.0
+    permit<----> = 192.168.0.0/255.255.255.0
+    call-limit<> = 2
+    callcounter> = yes
+
+[1001](allphones)
+    mailbox<---> = 1001
+
+[1002](allphones)
+    mailbox<---> = 1002
+    callerid<--> = "Срочное" <1002>
+
+[1005](allphones)
+    mailbox<---> = 1005
+    callerid<--> = "Semya" <1005>
+
+[1060](allphones)
+    mailbox<---> = 1060
+    callerid<--> = "Иванова(Семья)" <1060>
+
+[1008](allphones)
+    mailbox<---> = 1008
+    callerid<--> = "Надомное" <1008>
+
+[1090](allphones)
+    mailbox<---> = 1090
+    callerid<--> = "Бухгалтерия" <1090>
+
+[1011](allphones)
+    mailbox<---> = 1011
+    callerid<--> = "ЛеоноваОА" <1011>
+
+[1012](allphones)
+    mailbox<---> = 1012
+    callerid<--> = "ЛюбимцеваНЛ" <1012>
+
+[TA410]
+    host<------> = 192.168.0.98
+    type<------> = peer
+    context<---> = From_TA410
+    ;canreinvite = no            ;не соединять медиа потоки peer-to-peer в обход сервера
+    directmedia> = no         ;тоже что canreinvite в новой редакции
+    qualify<---> = yes
+    disallow<--> = all
+    allow<-----> = alaw
+    allow<-----> = ulaw

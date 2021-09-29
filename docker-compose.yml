@@ -20,22 +20,25 @@ services:
       #image: asterisk
       #container_name: asterisk
       hostname: asterisk1
-      #ports:
-        #- 5060:5060/tcp
-        #- 5060:5060/udp
-        #- 10000-10100:10000-10100/udp
-        #- 10000-10100:10000-10100/tcp
+      ports:
+        - 5060:5060/udp
+№        - 10000-10099:10000-10099/udp
       networks:
         asterisk:
           ipv4_address: 172.16.16.2
       #restart: always
       volumes:
-        - ./conf/asterisk/default/asterisk:/etc/default/asterisk
-        - ./conf/asterisk/asterisk:/etc/asterisk
+        - ./conf/asterisk1/default/asterisk:/etc/default/asterisk
+        - ./conf/asterisk1/asterisk:/etc/asterisk
 #        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
 #        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
+<<<<<<< HEAD
         - ./logs/asterisk:/var/log/asterisk"
         #- asterisk-var:/var/lib/asterisk/
+=======
+        - ./logs/asterisk1:/var/log/asterisk"
+        - asterisk-var:/var/lib/asterisk/
+>>>>>>> master
         #- "/home/odbc/odbc.ini:/etc/odbc.ini"
         #- "/home/odbc/odbcinst.ini:/etc/odbcinst.ini"
       #command: "wait-for-it 192.168.0.99:3306 -s -t 20 -- asterisk -fvvvvv"
@@ -55,21 +58,24 @@ services:
       #container_name: asterisk
       hostname: asterisk2
       #restart: always
-      #ports:
-      #  - 5060:5060/tcp
-      #  - 5060:5060/udp
-      #  - 10000-10200:10000-10200/udp
-      #  - 10000-10200:10000-10200/tcp
+      ports:
+        - 5061:5060/udp
+#        - 10100-10200:10100-10200/udp
       networks:
         asterisk:
           ipv4_address: 172.16.16.3
       volumes:
-        - ./conf/asterisk/default/asterisk:/etc/default/asterisk
-        - ./conf/asterisk/asterisk:/etc/asterisk
+        - ./conf/asterisk2/default/asterisk:/etc/default/asterisk
+        - ./conf/asterisk2/asterisk:/etc/asterisk
 #        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
 #        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
+<<<<<<< HEAD
         - ./logs/asterisk:/var/log/asterisk"
         #- asterisk-var:/var/lib/asterisk/
+=======
+        - ./logs/asterisk2:/var/log/asterisk"
+        - asterisk-var:/var/lib/asterisk/
+>>>>>>> master
         #- "/home/odbc/odbc.ini:/etc/odbc.ini"
         #- "/home/odbc/odbcinst.ini:/etc/odbcinst.ini"
       #command: "wait-for-it 192.168.0.99:3306 -s -t 20 -- asterisk -fvvvvv"
@@ -81,3 +87,29 @@ services:
 #        - mysql
       #network_mode: "host"
 
+<<<<<<< HEAD
+=======
+    freepbx:
+      build:
+        context: .
+        dockerfile: Dockerfile.freepbx
+      volumes:
+        - ./conf/asterisk/default/asterisk:/etc/default/asterisk
+        - ./conf/asterisk/asterisk:/etc/asterisk
+#        - "/home/asterisk/asterisk/modules.conf:/etc/asterisk/modules.conf"
+#        - "/home/asterisk/asterisk/sip.conf:/etc/asterisk/sip.conf"
+        - ./logs/asterisk:/var/log/asterisk"
+        #- asterisk-var:/var/lib/asterisk/
+      entrypoint: [ '/entry-fpbx.sh' ]
+
+networks: 
+  asterisk:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.16.0/24
+
+volumes:
+  asterisk-var:
+>>>>>>> master
